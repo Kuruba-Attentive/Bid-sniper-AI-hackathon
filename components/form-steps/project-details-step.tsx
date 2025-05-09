@@ -1,14 +1,23 @@
-'use client';
+"use client";
 
-import { 
-  PROJECT_SIZE_OPTIONS, 
-  SCOPE_OF_WORK_OPTIONS 
-} from '@/types';
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { PROJECT_SIZE_OPTIONS, SCOPE_OF_WORK_OPTIONS } from "@/types";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 
 export function ProjectDetailsStep({ form }: { form: any }) {
   return (
@@ -53,7 +62,7 @@ export function ProjectDetailsStep({ form }: { form: any }) {
           />
         </CardContent>
       </Card>
-      
+      {/*       
       <Card>
         <CardHeader>
           <CardTitle>Scope of Work</CardTitle>
@@ -98,8 +107,8 @@ export function ProjectDetailsStep({ form }: { form: any }) {
             )}
           />
         </CardContent>
-      </Card>
-      
+      </Card> */}
+
       <Card>
         <CardHeader>
           <CardTitle>Project Budget</CardTitle>

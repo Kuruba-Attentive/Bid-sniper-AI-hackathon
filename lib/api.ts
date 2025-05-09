@@ -1,5 +1,6 @@
 "use client";
 
+import axios from "axios";
 import { BidFormData } from "@/types";
 
 export interface BidOutput {
@@ -29,7 +30,7 @@ export interface BidData {
 }
 
 // Mock data from the API
-const mockBidData: BidData[] = [
+export const mockBidData: BidData[] = [
   {
     output: {
       location:
@@ -124,19 +125,29 @@ const mockBidData: BidData[] = [
     },
   },
 ];
-
-// Mock AI processing function - in a real app, this would call your backend
 export async function processBidData(
   formData: BidFormData
 ): Promise<BidData[]> {
-  // Simulating API call delay
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-
-  // Return the mock data
-  return mockBidData;
+  try {
+    const response = await axios.post(
+      "https://75b3-180-151-22-206.ngrok-free.app/start_workflow",
+      {
+        trades: formData.trades,
+        blacklisted_companies: formData.blacklistedContractors,
+        project_size: formData.projectSize,
+        // scope_of_work: formData.scopeOfWork,
+        project_budget: parseFloat(formData.projectBudget),
+        job_type: formData.typeOfJob.toLowerCase(),
+        building_type: formData.typeOfBuilding.toLowerCase(),
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error("Error processing bid data:", error);
+    throw error;
+  }
 }
 
-// Function to calculate bid scores based on weights
 export async function calculateBidScores(
   bids: BidData[],
   weights: Record<string, number>

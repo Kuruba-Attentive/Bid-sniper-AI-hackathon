@@ -6,7 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, ExternalLink, FileSpreadsheet, RotateCcw } from "lucide-react";
+import {
+  Search,
+  ExternalLink,
+  FileSpreadsheet,
+  RotateCcw,
+  ArrowLeft,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
@@ -74,15 +80,15 @@ export function BidResultsTable() {
           <h2 className="text-2xl font-bold tracking-tight">
             Bid Opportunities
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mt-2">
             {filteredData.length} opportunities found
           </p>
         </div>
 
         <div className="flex gap-2 w-full sm:w-auto">
           <Button variant="outline" size="sm" onClick={handleReset}>
-            <RotateCcw className="h-4 w-4 mr-2" />
-            New Search
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Form
           </Button>
           <Button variant="outline" size="sm">
             <FileSpreadsheet className="h-4 w-4 mr-2" />

@@ -1,6 +1,6 @@
 "use client";
 
-import { PROJECT_SIZE_OPTIONS, SCOPE_OF_WORK_OPTIONS } from "@/types";
+import { PROJECT_SIZE_OPTIONS } from "@/types";
 import {
   FormField,
   FormItem,
@@ -20,18 +20,19 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { X, Plus } from "lucide-react";
+import { useState } from "react";
 
 export function ProjectDetailsStep({ form }: { form: any }) {
   const pastRelationships = form.watch("pastRelationships") || [];
+  const [pastRelationship, setPastRelationship] = useState("");
 
-  const addPastRelationship = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const relationship = formData.get("relationship") as string;
-    
-    if (relationship?.trim()) {
-      form.setValue("pastRelationships", [...pastRelationships, relationship.trim()]);
-      (e.target as HTMLFormElement).reset();
+  const addPastRelationship = () => {
+    if (pastRelationship?.trim()) {
+      form.setValue("pastRelationships", [
+        ...pastRelationships,
+        pastRelationship.trim(),
+      ]);
+      setPastRelationship("");
     }
   };
 
@@ -58,10 +59,7 @@ export function ProjectDetailsStep({ form }: { form: any }) {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input 
-                    placeholder="Enter property address"
-                    {...field}
-                  />
+                  <Input placeholder="Enter property address" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -78,22 +76,27 @@ export function ProjectDetailsStep({ form }: { form: any }) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={addPastRelationship} className="flex gap-2 mb-4">
+          <div className="flex gap-2 mb-4">
             <Input
               name="relationship"
               placeholder="Enter name or email"
               className="flex-1"
+              value={pastRelationship}
+              onChange={(e) => setPastRelationship(e.target.value)}
             />
-            <Button type="submit">
+            <Button type="button" onClick={addPastRelationship}>
               <Plus className="h-4 w-4 mr-2" />
               Add
             </Button>
-          </form>
-          
+          </div>
           <div className="flex flex-wrap gap-2 mt-2">
             {pastRelationships.length > 0 ? (
               pastRelationships.map((relationship: string) => (
-                <Badge key={relationship} variant="secondary" className="px-3 py-1">
+                <Badge
+                  key={relationship}
+                  variant="secondary"
+                  className="px-3 py-1"
+                >
                   {relationship}
                   <Button
                     variant="ghost"
@@ -106,7 +109,9 @@ export function ProjectDetailsStep({ form }: { form: any }) {
                 </Badge>
               ))
             ) : (
-              <p className="text-sm text-muted-foreground">No past relationships added</p>
+              <p className="text-sm text-muted-foreground">
+                No past relationships added
+              </p>
             )}
           </div>
         </CardContent>

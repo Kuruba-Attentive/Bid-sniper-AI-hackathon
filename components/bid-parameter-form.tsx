@@ -41,10 +41,11 @@ const formSchema = z.object({
   trades: z.array(z.string()).min(1, "Select at least one trade"),
   blacklistedContractors: z.array(z.string()).optional(),
   projectSize: z.string().min(1, "Project size is required"),
-  // scopeOfWork: z.array(z.string()).min(1, "Select at least one scope of work"),
+  propertyAddress: z.string().min(1, "Property address is required"),
   projectBudget: z.string().min(1, "Project budget is required"),
   typeOfJob: z.string().min(1, "Type of job is required"),
   typeOfBuilding: z.string().min(1, "Type of building is required"),
+  pastRelationships: z.array(z.string()).optional(),
 });
 
 interface BidParameterFormProps {
@@ -61,10 +62,11 @@ export function BidParameterForm({ onSubmit }: BidParameterFormProps) {
       trades: formData.trades,
       blacklistedContractors: formData.blacklistedContractors,
       projectSize: formData.projectSize,
-      // scopeOfWork: formData.scopeOfWork,
+      propertyAddress: formData.propertyAddress,
       projectBudget: formData.projectBudget,
       typeOfJob: formData.typeOfJob,
       typeOfBuilding: formData.typeOfBuilding,
+      pastRelationships: formData.pastRelationships,
     },
   });
 

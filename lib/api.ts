@@ -3,33 +3,84 @@
 import axios from "axios";
 import { BidFormData } from "@/types";
 
+/**
+ * TypeScript interface for the project data structure
+ */
 export interface BidOutput {
-  location: string;
+  /** Unique identifier for the project */
+  id: number;
+
+  /** Name of the project */
   project_name: string;
+
+  /** Detailed description of the project */
   project_description: string;
+
+  /** Company associated with the project */
   company: string;
+
+  /** Physical location of the project */
+  location: string;
+
+  /** Due date for project bids in DD-MM-YYYY format */
   bid_due_date: string;
-  project_start_date: string;
-  project_end_date: string;
-  project_cost: string;
-  trade: string;
-  scope_of_work: string;
-  complexity_of_the_project: string;
+
+  /** Creation timestamp in DD-MM-YYYY HH:MM:SS format */
+  created_at: string;
+
+  /** Last update timestamp in DD-MM-YYYY HH:MM:SS format */
+  updated_at: string;
+
+  /** Area of expertise required for the project */
   area_of_expertise: string;
+
+  /** The specific work to be performed (e.g., Renovation, Construction) */
+  scope_of_work: string;
+
+  /** Size classification of the project (e.g., small, medium, large) */
+  project_size: string;
+
+  /** Square footage of the project area, often represented as a string */
   square_footage_of_work: string;
-  type_of_building: string;
+
+  /** Estimated cost of the project as a string */
+  project_cost: string;
+
+  /** The complexity level of the project */
+  complexity_of_the_project: string;
+
+  /** Type of job classification (e.g., Commercial) */
   type_of_job: string;
-  is_public_work: boolean;
+
+  /** Type of building for the project (e.g., Retail, Mixed-Use) */
+  type_of_building: string;
+
+  /** Industry trade classification (e.g., HVAC, Retail) */
+  trade: string;
+
+  /** Flag indicating if the project is private work */
   is_private_work: boolean;
+
+  /** Flag indicating if the project is public work */
+  is_public_work: boolean;
+
+  /** Array of links related to bid details */
   bid_details_link: string[];
+
+  /** Array of email addresses related to the project */
   related_emails: string[];
+
+  /** Start date of the project in DD-MM-YYYY format, can be null */
+  project_start_date: string | null;
+
+  /** End date of the project in DD-MM-YYYY format, can be null */
+  project_end_date: string | null;
 }
 
-export interface BidData {
-  output: BidOutput;
-}
-
-export async function processBidData(formData: BidFormData): Promise<void> {
+export type BidData = BidOutput[];
+export async function processBidData(
+  formData: BidFormData
+): Promise<BidData[]> {
   try {
     await axios.post(
       "https://75b3-180-151-22-206.ngrok-free.app/start_workflow",

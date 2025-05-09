@@ -18,6 +18,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import { RankingSliders } from "@/components/ranking-sliders";
 import { calculateBidScores, BidData } from "@/lib/api";
+import LoadingScreenDemo from "./loading-screen";
 
 interface ScoredBidData extends BidData {
   score?: number;
@@ -31,6 +32,15 @@ export function BidResultsTable() {
   } = useBidStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [scoredBidData, setScoredBidData] = useState<ScoredBidData[]>([]);
+  const [showLoader, setShowLoader] = useState(true);
+
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setShowLoader(false);
+    }, 3000);
+
+    return () => clearTimeout(id);
+  }, []);
 
   useEffect(() => {
     // Initialize with random scores
@@ -72,6 +82,8 @@ export function BidResultsTable() {
   };
 
   const filteredData = getFilteredData();
+
+  if (showLoader) return <LoadingScreenDemo />;
 
   return (
     <div className="space-y-4">

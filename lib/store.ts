@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { BidFormData, BidDataItem } from "@/types";
-import { mockBidData } from "./api";
 
 interface BidStore {
   // Form State
@@ -25,7 +24,8 @@ const initialFormData: BidFormData = {
   trades: [],
   blacklistedContractors: [],
   projectSize: "",
-  // scopeOfWork: [],
+  propertyAddress: "",
+  pastRelationships: [],
   projectBudget: "",
   typeOfJob: "",
   typeOfBuilding: "",
@@ -47,7 +47,7 @@ export const useBidStore = create<BidStore>((set) => ({
   setIsLoading: (loading) => set({ isLoading: loading }),
 
   // Results State
-  bidData: mockBidData,
+  bidData: [],
   setBidData: (data) => set({ bidData: data }),
   isFormSubmitted: false,
   setIsFormSubmitted: (submitted) => set({ isFormSubmitted: submitted }),

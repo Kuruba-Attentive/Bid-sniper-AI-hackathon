@@ -2,7 +2,8 @@ export interface BidFormData {
   trades: string[];
   blacklistedContractors: string[];
   projectSize: string;
-  // scopeOfWork: string[];
+  propertyAddress: string;
+  pastRelationships: string[];
   projectBudget: string;
   typeOfJob: string;
   typeOfBuilding: string;
@@ -15,7 +16,6 @@ export interface BidDataItem {
   trade: string;
   location: string;
   projectSize: string;
-  // scopeOfWork: string;
   bidDueDate: string;
   qualification: number;
   status: "pending" | "qualified" | "rejected";
@@ -48,14 +48,6 @@ export const TRADE_OPTIONS = [
   { label: "Carpentry", value: "carpentry" },
   { label: "Masonry", value: "masonry" },
   { label: "Roofing", value: "roofing" },
-];
-
-export const SCOPE_OF_WORK_OPTIONS = [
-  { label: "Improvement", value: "improvement" },
-  { label: "Replacement", value: "replacement" },
-  { label: "Construction", value: "construction" },
-  { label: "Refurbishing", value: "refurbishing" },
-  { label: "Maintenance", value: "maintenance" },
 ];
 
 export const BUILDING_TYPE_OPTIONS = [

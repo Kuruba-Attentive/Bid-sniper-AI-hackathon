@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useBidStore } from "@/lib/store";
-import { BidParameterForm } from "@/components/bid-parameter-form";
-import { BidResultsTable } from "@/components/bid-results-table";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card } from "@/components/ui/card";
-import { useMutation } from "@tanstack/react-query";
-import { processBidData } from "@/lib/api";
-import { Loader2 } from "lucide-react";
+import { useState } from 'react';
+import { useBidStore } from '@/lib/store';
+import { BidParameterForm } from '@/components/bid-parameter-form';
+import { BidResultsTable } from '@/components/bid-results-table';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Card } from '@/components/ui/card';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { processBidData } from '@/lib/api';
+import { Loader2 } from 'lucide-react';
 
 export function BidWorkflow() {
   const {
@@ -22,20 +22,35 @@ export function BidWorkflow() {
 
   const { mutate: processBids, isPending } = useMutation({
     mutationFn: processBidData,
-    onSuccess: (data) => {
-      setBidData(data);
+    onSuccess: () => {
       setIsLoading(false);
       setIsFormSubmitted(true);
     },
+    onError: (error) => {
+      console.error('Error processing bids:', error);
+      setIsLoading(false);
+    },
   });
 
-  const handleFormSubmit = (data) => {
+  const { data: bidResults, isLoading: isLoadingResults } = useQuery({
+    queryKey: ['bidResults'],
+    queryFn: async () => {
+      const response = await fetch('https://75b3-180-151-22-206.ngrok-free.app/outputs');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    },
+    enabled: isFormSubmitted,
+    refetchInterval: isFormSubmitted ? 5000 : false,
+    onSuccess: (data) => {
+      setBidData(data);
+    },
+  });
+
+  const handleFormSubmit = (data: any) => {
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setIsFormSubmitted(true);
-    }, 3000);
-    // processBids(data);
+    processBids(data);
   };
 
   return (
@@ -65,7 +80,7 @@ export function BidWorkflow() {
         )}
       </AnimatePresence>
 
-      {isLoading && (
+      {(isLoading || isPending || isLoadingResults) && (
         <motion.div
           className="fixed inset-0 bg-background/80 flex items-center justify-center z-50"
           initial={{ opacity: 0 }}

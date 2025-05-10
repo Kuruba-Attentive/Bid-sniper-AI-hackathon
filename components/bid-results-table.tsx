@@ -1,21 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useBidStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import {
-  Search,
-  ExternalLink,
-  FileSpreadsheet,
-  ArrowLeft,
-} from "lucide-react";
-import { motion } from "framer-motion";
+import { Search, ExternalLink, FileSpreadsheet, ArrowLeft } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RankingSliders } from "@/components/ranking-sliders";
-import { BidData } from "@/lib/api";
 import LoadingScreenDemo from "./loading-screen";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -49,7 +41,7 @@ const formatDate = (dateString: string): string => {
 
 export function BidResultsTable() {
   const {
-    bidData: initialBidData,
+    bidData,
     resetFormData,
     setIsFormSubmitted,
     isFormSubmitted,
@@ -108,18 +100,22 @@ export function BidResultsTable() {
     setIsFormSubmitted(false);
   };
 
-  const filteredData = Array.isArray(initialBidData) ? initialBidData.filter((bid) => {
-    const searchLower = searchTerm.toLowerCase();
-    return (
-      bid.project_name.toLowerCase().includes(searchLower) ||
-      bid.project_description.toLowerCase().includes(searchLower) ||
-      bid.company.toLowerCase().includes(searchLower) ||
-      bid.location.toLowerCase().includes(searchLower) ||
-      bid.trade.toLowerCase().includes(searchLower)
-    );
-  }) : [];
+  const filteredData = useMemo(() => {
+    return Array.isArray(bidData)
+      ? bidData.filter((bid) => {
+          const searchLower = searchTerm.toLowerCase();
+          return (
+            bid.project_name.toLowerCase().includes(searchLower) ||
+            bid.project_description.toLowerCase().includes(searchLower) ||
+            bid.company.toLowerCase().includes(searchLower) ||
+            bid.location.toLowerCase().includes(searchLower) ||
+            bid.trade.toLowerCase().includes(searchLower)
+          );
+        })
+      : [];
+  }, [bidData, searchTerm]);
 
-  if (isLoadingResults || !initialBidData) return <LoadingScreenDemo />;
+  if (!bidData) return <LoadingScreenDemo />;
 
   return (
     <div className="space-y-4">
@@ -180,7 +176,9 @@ export function BidResultsTable() {
                 <TableBody>
                   {filteredData.map((bid) => (
                     <TableRow key={bid.id}>
-                      <TableCell className="font-medium">{bid.project_name}</TableCell>
+                      <TableCell className="font-medium">
+                        {bid.project_name}
+                      </TableCell>
                       <TableCell>{bid.company}</TableCell>
                       <TableCell>{bid.location}</TableCell>
                       <TableCell>{bid.trade}</TableCell>
@@ -202,4 +200,3 @@ export function BidResultsTable() {
     </div>
   );
 }
-

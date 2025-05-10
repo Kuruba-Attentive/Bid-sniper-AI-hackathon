@@ -71,16 +71,10 @@ export function BidParameterForm({ onSubmit }: BidParameterFormProps) {
   });
 
   const steps = [
-    { id: "trades", label: "Trades", icon: <ListFilter className="h-4 w-4" /> },
     {
-      id: "details",
-      label: "Project Details",
-      icon: <Building2 className="h-4 w-4" />,
-    },
-    {
-      id: "additional",
-      label: "Additional Parameters",
-      icon: <CircleDollarSign className="h-4 w-4" />,
+      id: "form",
+      label: "Bid Parameters",
+      icon: <ListFilter className="h-4 w-4" />,
     },
     {
       id: "review",
@@ -169,10 +163,14 @@ export function BidParameterForm({ onSubmit }: BidParameterFormProps) {
                 exit={{ opacity: 0, x: -10 }}
                 transition={{ duration: 0.3 }}
               >
-                {currentStep === 0 && <TradeSelectionStep form={form} />}
-                {currentStep === 1 && <ProjectDetailsStep form={form} />}
-                {currentStep === 2 && <AdditionalParametersStep form={form} />}
-                {currentStep === 3 && <ReviewSubmitStep form={form} />}
+                {currentStep === 0 && (
+                  <div className="space-y-6">
+                    <TradeSelectionStep form={form} />
+                    <ProjectDetailsStep form={form} />
+                    <AdditionalParametersStep form={form} />
+                  </div>
+                )}
+                {currentStep === 1 && <ReviewSubmitStep form={form} />}
               </motion.div>
             </AnimatePresence>
 

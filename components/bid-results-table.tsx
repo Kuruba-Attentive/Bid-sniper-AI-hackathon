@@ -10,21 +10,23 @@ import {
   Search,
   ExternalLink,
   FileSpreadsheet,
-  RotateCcw,
   ArrowLeft,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Progress } from "@/components/ui/progress";
 import { RankingSliders } from "@/components/ranking-sliders";
-import { calculateBidScores, BidData } from "@/lib/api";
+import { BidData } from "@/lib/api";
 import LoadingScreenDemo from "./loading-screen";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-
-interface ScoredBidData extends BidData {
-  score?: number;
-}
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 // Helper function to format dates in MM/DD/YYYY format
 const formatDate = (dateString: string): string => {
@@ -54,7 +56,6 @@ export function BidResultsTable() {
     setBidData,
   } = useBidStore();
   const [searchTerm, setSearchTerm] = useState("");
-  const [scoredBidData, setScoredBidData] = useState<ScoredBidData[]>([]);
   const [enablePolling, setEnablePolling] = useState(true);
 
   const {
@@ -71,7 +72,6 @@ export function BidResultsTable() {
         return response.data;
       } catch (error) {
         console.error("Error fetching bid results:", error);
-        // Return empty array if API fails
         return [];
       }
     },
@@ -80,8 +80,10 @@ export function BidResultsTable() {
   });
 
   useEffect(() => {
-    setBidData(data);
-  }, [data]);
+    if (data) {
+      setBidData(data);
+    }
+  }, [data, setBidData]);
 
   useEffect(() => {
     if (isFormSubmitted) {
@@ -95,43 +97,9 @@ export function BidResultsTable() {
     }
   }, [isFormSubmitted]);
 
-  useEffect(() => {
-    if (
-      initialBidData &&
-      Array.isArray(initialBidData) &&
-      initialBidData.length > 0
-    ) {
-      // Initialize with scores based on a combination of factors
-      const initialScores = initialBidData.map((bid) => {
-        // Calculate a more meaningful initial score based on bid properties
-        let baseScore = Math.random() * 60 + 20; // Base score between 20-80
-
-        // Boost public work projects slightly
-        if (bid.is_public_work) baseScore += 5;
-
-        // Adjust score based on project complexity
-        if (bid.complexity_of_the_project === "Standard") baseScore += 3;
-
-        // Cap score at 100
-        const finalScore = Math.min(baseScore, 100);
-
-        return {
-          ...bid,
-          score: finalScore,
-        };
-      });
-      setScoredBidData(initialScores);
-    } else {
-      setScoredBidData([]);
-    }
-  }, [initialBidData]);
-
-  const handleWeightsChange = async (weights: Record<string, number>) => {
-    try {
-      const updatedData = await calculateBidScores(initialBidData, weights);
-      setScoredBidData(updatedData);
-    } catch (error) {
-      console.error("Error updating bid scores:", error);
+  const handleWeightsChange = (data: any) => {
+    if (Array.isArray(data)) {
+      setBidData(data);
     }
   };
 
@@ -140,34 +108,18 @@ export function BidResultsTable() {
     setIsFormSubmitted(false);
   };
 
-  const getFilteredData = () => {
-    return scoredBidData
-      .filter((item) => {
-        if (!item) return false;
+  const filteredData = Array.isArray(initialBidData) ? initialBidData.filter((bid) => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      bid.project_name.toLowerCase().includes(searchLower) ||
+      bid.project_description.toLowerCase().includes(searchLower) ||
+      bid.company.toLowerCase().includes(searchLower) ||
+      bid.location.toLowerCase().includes(searchLower) ||
+      bid.trade.toLowerCase().includes(searchLower)
+    );
+  }) : [];
 
-        if (searchTerm) {
-          const searchLower = searchTerm.toLowerCase();
-          return (
-            item.project_name?.toLowerCase().includes(searchLower) ||
-            false ||
-            item.company?.toLowerCase().includes(searchLower) ||
-            false ||
-            item.location?.toLowerCase().includes(searchLower) ||
-            false ||
-            item.trade?.toLowerCase().includes(searchLower) ||
-            false ||
-            item.scope_of_work?.toLowerCase().includes(searchLower) ||
-            false
-          );
-        }
-        return true;
-      })
-      .sort((a, b) => (b.score || 0) - (a.score || 0));
-  };
-
-  const filteredData = getFilteredData();
-
-  if (isLoadingResults || !data.length) return <LoadingScreenDemo />;
+  if (isLoadingResults || !initialBidData) return <LoadingScreenDemo />;
 
   return (
     <div className="space-y-4">
@@ -211,108 +163,38 @@ export function BidResultsTable() {
         </CardHeader>
 
         <CardContent>
-          <div className="rounded-md border relative">
-            {/* Sticky Header with solid background to prevent content showing through */}
-            <div className="grid grid-cols-12 border-b bg-background p-2 sticky top-0 z-10 shadow-sm">
-              <div className="col-span-4 font-medium">Project Details</div>
-              <div className="col-span-2 font-medium">Company</div>
-              <div className="col-span-2 font-medium">Trade & Scope</div>
-              <div className="col-span-2 font-medium">Timeline</div>
-              <div className="col-span-2 font-medium">Score</div>
-            </div>
-
-            <ScrollArea className="h-[calc(100vh-28rem)] w-full">
-              {filteredData.map((item, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                  className="grid grid-cols-12 border-b p-4 hover:bg-muted/50"
-                >
-                  <div className="col-span-4">
-                    <div className="font-medium">{item.project_name}</div>
-                    <div className="text-sm text-muted-foreground mt-1">
-                      {item.location}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                      {item.project_description}
-                    </div>
-                    {item.bid_details_link?.[0] && (
-                      <a
-                        href={item.bid_details_link[0]}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-primary flex items-center mt-2"
-                      >
-                        View Details
-                        <ExternalLink className="h-3 w-3 ml-1" />
-                      </a>
-                    )}
-                  </div>
-
-                  <div className="col-span-2">
-                    <div className="font-medium">{item.company}</div>
-                    <Badge
-                      variant={item.is_public_work ? "secondary" : "outline"}
-                      className="mt-1"
-                    >
-                      {item.is_public_work ? "Public" : "Private"}
-                    </Badge>
-                  </div>
-
-                  <div className="col-span-2">
-                    <Badge variant="outline" className="mb-1">
-                      {item.trade}
-                    </Badge>
-                    <div className="text-sm text-muted-foreground">
-                      {item.scope_of_work}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {item.area_of_expertise}
-                    </div>
-                  </div>
-
-                  <div className="col-span-2">
-                    <div className="text-sm">
-                      <span className="font-medium">Due:</span>{" "}
-                      {item.bid_due_date
-                        ? formatDate(item.bid_due_date)
-                        : "N/A"}
-                    </div>
-                    {item.project_start_date && (
-                      <div className="text-sm text-muted-foreground">
-                        <span className="font-medium">Start:</span>{" "}
-                        {formatDate(item.project_start_date)}
-                      </div>
-                    )}
-                    {item.project_end_date && (
-                      <div className="text-sm text-muted-foreground">
-                        <span className="font-medium">End:</span>{" "}
-                        {formatDate(item.project_end_date)}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="col-span-2">
-                    <div className="flex items-center space-x-2">
-                      <Progress value={item.score} className="bg-muted" />
-                      <span className="text-sm font-medium">
-                        {Math.round(item.score || 0)}%
-                      </span>
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {item.complexity_of_the_project || "Standard"}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-
-              {filteredData.length === 0 && (
-                <div className="p-8 text-center text-muted-foreground">
-                  No opportunities found matching your criteria.
-                </div>
-              )}
+          <div className="rounded-md border">
+            <ScrollArea className="h-[600px]">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Project Name</TableHead>
+                    <TableHead>Company</TableHead>
+                    <TableHead>Location</TableHead>
+                    <TableHead>Trade</TableHead>
+                    <TableHead>Project Size</TableHead>
+                    <TableHead>Due Date</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredData.map((bid) => (
+                    <TableRow key={bid.id}>
+                      <TableCell className="font-medium">{bid.project_name}</TableCell>
+                      <TableCell>{bid.company}</TableCell>
+                      <TableCell>{bid.location}</TableCell>
+                      <TableCell>{bid.trade}</TableCell>
+                      <TableCell>{bid.project_size}</TableCell>
+                      <TableCell>{formatDate(bid.bid_due_date)}</TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="icon">
+                          <ExternalLink className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </ScrollArea>
           </div>
         </CardContent>
@@ -320,3 +202,4 @@ export function BidResultsTable() {
     </div>
   );
 }
+

@@ -1,8 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+import debounce from 'lodash/debounce';
 
 interface RankingParameter {
   name: string;
@@ -23,28 +26,60 @@ export function RankingSliders({ onWeightsChange }: RankingSlidersProps) {
     { name: 'Budget Match', key: 'project_budget', value: 0.5 },
   ]);
 
+  const { mutate: updateWeights } = useMutation({
+    mutationFn: async (weights: Record<string, number>) => {
+      const response = await axios.post(
+        'https://75b3-180-151-22-206.ngrok-free.app/get_weighted_outputs',
+        {
+          pastRelationship: weights.past_relationship,
+          trade: weights.trade,
+          location: weights.location,
+          project_size: weights.project_size,
+          budget: weights.project_budget
+        }
+      );
+      return response.data;
+    },
+    onSuccess: (data) => {
+      // Update the table with the new data
+      onWeightsChange(data);
+    },
+    onError: (error) => {
+      console.error('Error updating weights:', error);
+    },
+  });
+
+  // Create a debounced version of the updateWeights function
+  const debouncedUpdateWeights = useCallback(
+    debounce((weights: Record<string, number>) => {
+      updateWeights(weights);
+    }, 500),
+    []
+  );
+
   const handleSliderChange = (value: number[], index: number) => {
     const updatedParameters = [...parameters];
     updatedParameters[index].value = value[0];
     setParameters(updatedParameters);
 
     // Convert parameters to weights object
-    const weights = parameters.reduce((acc, param) => ({
+    const weights = updatedParameters.reduce((acc, param) => ({
       ...acc,
       [param.key]: param.value,
     }), {});
 
-    onWeightsChange(weights);
+    // Call the debounced function
+    debouncedUpdateWeights(weights);
   };
 
   return (
-    <Card className="mb-6">
-      <CardHeader>
-        <CardTitle>Ranking Parameters</CardTitle>
+    <Card className="mb-4">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg">Ranking Parameters</CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-6">
+      <CardContent className="grid gap-3">
         {parameters.map((param, index) => (
-          <div key={param.key} className="space-y-2">
+          <div key={param.key} className="space-y-1">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium">{param.name}</span>
               <span className="text-sm text-muted-foreground">

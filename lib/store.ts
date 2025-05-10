@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { BidFormData, BidDataItem } from "@/types";
+import { BidFormData } from "@/types";
+import { BidData } from "@/lib/api";
 
 interface BidStore {
   // Form State
@@ -14,8 +15,8 @@ interface BidStore {
   setIsLoading: (loading: boolean) => void;
 
   // Results State
-  bidData: BidDataItem[];
-  setBidData: (data: BidDataItem[]) => void;
+  bidData: BidData;
+  setBidData: (data: BidData) => void;
   isFormSubmitted: boolean;
   setIsFormSubmitted: (submitted: boolean) => void;
 }

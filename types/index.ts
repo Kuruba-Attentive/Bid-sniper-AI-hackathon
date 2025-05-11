@@ -13,7 +13,7 @@ export interface BidDataItem {
   id: string;
   companyName: string;
   bidAmount: number;
-  trade: string;
+  trades: string[];
   location: string;
   projectSize: string;
   bidDueDate: string;
@@ -29,7 +29,7 @@ export interface SortState {
 }
 
 export interface FilterState {
-  trade: string | null;
+  trades: string[] | null;
   status: string | null;
   qualification: number | null;
 }

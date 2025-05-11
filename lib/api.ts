@@ -56,7 +56,7 @@ export interface BidOutput {
   type_of_building: string;
 
   /** Industry trade classification (e.g., HVAC, Retail) */
-  trade: string;
+  trades: string[];
 
   /** Flag indicating if the project is private work */
   is_private_work: boolean;
@@ -82,7 +82,7 @@ export async function processBidData(
   formData: BidFormData
 ): Promise<BidData[]> {
   try {
-    await axios.post(
+    const response = await axios.post(
       "https://75b3-180-151-22-206.ngrok-free.app/start_workflow",
       {
         trades: formData.trades,
@@ -95,6 +95,7 @@ export async function processBidData(
         building_type: formData.typeOfBuilding.toLowerCase(),
       }
     );
+    return response.data;
   } catch (error) {
     console.error("Error processing bid data:", error);
     throw error;
@@ -102,9 +103,9 @@ export async function processBidData(
 }
 
 export async function calculateBidScores(
-  bids: BidData[],
+  bids: BidData,
   weights: Record<string, number>
-): Promise<(BidData & { score: number })[]> {
+): Promise<BidOutput[]> {
   return bids.map((bid) => ({
     ...bid,
     score: Math.random() * 100,

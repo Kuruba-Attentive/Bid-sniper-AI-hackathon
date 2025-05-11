@@ -11,14 +11,8 @@ import { processBidData } from "@/lib/api";
 import { Loader2 } from "lucide-react";
 
 export function BidWorkflow() {
-  const {
-    formData,
-    isFormSubmitted,
-    setIsFormSubmitted,
-    isLoading,
-    setIsLoading,
-    setBidData,
-  } = useBidStore();
+  const { isFormSubmitted, setIsFormSubmitted, isLoading, setIsLoading } =
+    useBidStore();
 
   const { mutate: processBids, isPending } = useMutation({
     mutationFn: processBidData,

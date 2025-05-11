@@ -8,30 +8,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
   ChevronRight,
   ChevronLeft,
   ListFilter,
-  CircleDollarSign,
-  Building2,
   Briefcase,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import {
-  PROJECT_SIZE_OPTIONS,
-  TRADE_OPTIONS,
-  SCOPE_OF_WORK_OPTIONS,
-  BUILDING_TYPE_OPTIONS,
-  JOB_TYPE_OPTIONS,
-} from "@/types";
 import { TradeSelectionStep } from "@/components/form-steps/trade-selection-step";
 import { ProjectDetailsStep } from "@/components/form-steps/project-details-step";
 import { AdditionalParametersStep } from "@/components/form-steps/additional-parameters-step";

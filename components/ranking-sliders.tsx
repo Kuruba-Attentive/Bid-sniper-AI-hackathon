@@ -29,7 +29,7 @@ export function RankingSliders({ onWeightsChange }: RankingSlidersProps) {
   const { mutate: updateWeights } = useMutation({
     mutationFn: async (weights: Record<string, number>) => {
       const response = await axios.post(
-        'http://34.100.131.110/get_weighted_outputs',
+        'http://34.100.131.110:5100/get_weighted_outputs',
         {
           pastRelationship: weights.past_relationship,
           trades: weights.trades,

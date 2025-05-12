@@ -60,7 +60,7 @@ export function BidResultsTable() {
     queryFn: async () => {
       try {
         const response = await axios.post(
-          "http://34.100.131.110/outputs"
+          "http://34.100.131.110:5100/outputs"
         );
         return response.data;
       } catch (error) {

@@ -11,7 +11,11 @@ import {
 } from "lucide-react";
 
 // Custom component for percent circle since it might not be available
-function PercentCircle(props) {
+interface PercentCircleProps {
+  className?: string;
+}
+
+function PercentCircle(props: PercentCircleProps) {
   return (
     <div className={props.className}>
       <svg

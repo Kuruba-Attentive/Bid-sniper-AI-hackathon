@@ -82,7 +82,7 @@ export function BidResultsTable() {
     if (isFormSubmitted) {
       const id = setTimeout(() => {
         setEnablePolling(false);
-      }, 1000 * 60);
+      }, 1500 * 60);
 
       return () => {
         clearTimeout(id);
@@ -211,6 +211,7 @@ export function BidResultsTable() {
                     <TableHead>Trade</TableHead>
                     <TableHead>Project Size</TableHead>
                     <TableHead>Due Date</TableHead>
+                    <TableHead>Related Emails</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -231,9 +232,38 @@ export function BidResultsTable() {
                       <TableCell>{bid.project_size}</TableCell>
                       <TableCell>{formatDate(bid.bid_due_date)}</TableCell>
                       <TableCell>
+                        <div className="flex flex-col gap-1">
+                          {bid.related_emails && Array.isArray(bid.related_emails) ? 
+                            bid.related_emails.map((email, index) => (
+                              <a 
+                                key={index} 
+                                href={`mailto:${email}`} 
+                                className="text-primary hover:text-primary/80 hover:underline text-xs"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {email}
+                              </a>
+                            )) 
+                            : 
+                            bid.related_emails && typeof bid.related_emails === 'string' ? 
+                              <a 
+                                href={`mailto:${bid.related_emails}`} 
+                                className="text-primary hover:text-primary/80 hover:underline text-xs"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {bid.related_emails}
+                              </a> 
+                              : 
+                              <span className="text-muted-foreground text-xs">No emails</span>
+                          }
+                        </div>
+                      </TableCell>
+                      <TableCell>
                         <div className="flex flex-wrap gap-2">
                           {bid.bid_details_link && Object.entries(bid.bid_details_link)
-                            .filter(([key, value]) => key && value) // Only show if both key and value exist
+                            .filter(([key, value]) => key && value)
                             .map(([key, value]) => (
                               <Button
                                 key={key}

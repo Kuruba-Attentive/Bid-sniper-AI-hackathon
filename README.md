@@ -1,145 +1,144 @@
-# Bid Sniper AI - Construction Bid Management Platform
+PostHog Events Documentation
+Overview
+This document outlines all PostHog analytics events implemented across the Finch (Plumbing) and Griffin (HVAC) applications. These events help track user interactions, feature usage, and workflow patterns.
 
-A modern web application that helps construction companies and contractors find and manage bid opportunities using AI-powered matching and ranking.
+## Event Categories
+### 1. Keyboard Shortcuts
+**Event Name:** `keyboard_shortcut_use_tool_id_tool_type`
+**Description:** Tracks keyboard shortcut usage across the application to understand which shortcuts are most/least used.
+**Tracked Shortcuts:**
+Tool Selection Shortcuts:  All annotation tools, markup tools, selection tools
+Clipboard Operations: Cut (Ctrl+X), Copy (Ctrl+C), Paste (Ctrl+V)
+Navigation: Sheet Up (Shift+↑), Sheet Down (Shift+↓), Pan (P), Zoom In (=), Zoom Out (-)
+Mode Toggles: Ortho Mode (Shift+O), Review Mode (Space), Display Circuits ©
+Special Actions: Tag (Shift+T), Reclassify (Shift+R), Split Line (Shift+H), Undo (Ctrl+Z), Redo (Shift+Ctrl+Z)
+Fitting Shortcuts (Griffin): Various HVAC fitting shortcuts (F+1 through F+8)
+Tool Reset: Escape key
 
-## Features
+### 2. Toolbar Interactions
+**Event Name:** `tool_clicked`
+**Description:** Tracks when users click on toolbar tools to understand which tools are most frequently used.
+**Note:** Custom tools can specify their own `posthog_event` property for specialized tracking.
 
-### 1. Smart Bid Matching
-- AI-powered matching of bid opportunities based on:
-  - Trade expertise
-  - Project size
-  - Location
-  - Past relationships
-  - Budget considerations
-  - Building type
-  - Job type
+### 3. Worksheet Panel Actions
+#### 3.1 Sheet Deletion
+**Event Name:** `sheet_delete_clicked`
+**Description:** Tracks when users delete a worksheet/sheet.
 
-### 2. Interactive Ranking System
-- Customizable ranking parameters:
-  - Past Relationship weight
-  - Trade Match weight
-  - Location weight
-  - Project Size weight
-  - Budget Match weight
-- Real-time updates as weights are adjusted
+#### 3.2 Sheet Duplication
+**Event Name:** `sheet_duplicate_clicked`
+**Description:** Tracks when users duplicate a worksheet/sheet.
 
-### 3. Comprehensive Bid Management
-- Detailed bid information display:
-  - Project details
-  - Company information
-  - Location data
-  - Trade requirements
-  - Project size
-  - Due dates
-  - Related emails
-  - Bid detail links
+#### 3.3 Sheet Rename
+**Event Name:** `sheet_rename_clicked`
+**Description:** Tracks when users rename a worksheet/sheet.
 
-### 4. User-Friendly Interface
-- Modern, responsive design
-- Interactive data tables
-- Search functionality
-- Export capabilities
-- Email integration
+### 4. Feature Panel Actions
+#### 4.1 Feature Deletion
+**Event Name:** `feature_delete_clicked`
+**Description:** Tracks when users delete a feature/layer from the feature panel.
 
-## Technical Stack
+#### 4.2 Locate Feature
+**Event Name:** `locate_feature_clicked`
+**Description:** Tracks when users click the locate icon to zoom to a feature on the map.
 
-- **Frontend Framework**: Next.js with TypeScript
-- **UI Components**: Custom components with Tailwind CSS
-- **State Management**: Zustand
-- **Data Fetching**: React Query
-- **API Integration**: Axios
-- **Form Handling**: React Hook Form with Zod validation
-- **Data Export**: XLSX library
+#### 4.3 Feature Visibility Toggle
+**Event Name:** `eye_visible_clicked`
+**Description:** Tracks when users toggle feature visibility (show/hide on map).
 
-## Getting Started
+### 5. Filtering & Sorting
+#### 5.1 Filtering
+**Event Name:** `filtering_changed`
+**Description:** Tracks when users apply filters to the feature list.
 
-### Prerequisites
-- Node.js (v14 or higher)
-- npm or yarn
+**Filter Types:**
+- By AI-generated features
+- By tags/groups
+- With comments
+- With measurements
+- Without measurements
 
-### Installation
+#### 5.2 Sorting
+**Event Name:** `sorting_changed`
+**Description:** Tracks when users apply sorting to the feature list.
 
-1. Clone the repository:
-```bash
-git clone [repository-url]
-cd bid-sniper-ai
-```
+### 6. Feature Generation
 
-2. Install dependencies:
-```bash
-npm install
-# or
-yarn install
-```
+#### 6.1 Damper Generation (Griffin - HVAC Only)
+**Event Name:** `damper_action_performed`
+**Description:** Tracks when users generate or remove dampers in the HVAC workflow.
+**Actions:**
+- **Generate:** AI-generated damper placement
+- **Undo:** Remove generated dampers
 
-3. Create a `.env.local` file in the root directory and add necessary environment variables:
-```env
-NEXT_PUBLIC_API_URL=your_api_url_here
-```
+#### 6.2 Fittings Generation Toggle (Finch - Plumbing Only)
 
-4. Start the development server:
-```bash
-npm run dev
-# or
-yarn dev
-```
+**Event Name:** `fittings_generation_toggled`
+**Description:** Tracks when users enable/disable automatic fittings generation in the plumbing workflow.
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+### 7. Annotation Menu Events
 
-## Usage
+#### 7.1 Tool Activation (Handle Annotation Menu)
 
-### Submitting Bid Parameters
-1. Fill out the bid parameter form with:
-   - Required trades
-   - Project size
-   - Property address
-   - Project budget
-   - Type of job
-   - Type of building
-   - Past relationships (optional)
-   - Blacklisted contractors (optional)
+**Event Name:** `tool_on_from_handle_annotation_menu`
+**Description:** Tracks when annotation tools are activated from the annotation menu for existing features.
+  
 
-2. Review and submit the form
+#### 7.2 Tool Activation (New Feature Annotation)
+**Event Name:** `tool_on_from_handle_annotation_menu_to_annotate_feature`
+**Description:** Tracks when annotation tools are activated to create new features.
 
-### Managing Bid Opportunities
-1. View matched bid opportunities in the results table
-2. Use the ranking sliders to adjust match priorities
-3. Search through opportunities using the search bar
-4. Export data to Excel using the export button
-5. Click on project names to search related emails in Gmail
-6. Access bid details through the action buttons
+### 8. Feature Creation
 
-## Project Structure
+#### 8.1 Feature Creation from Feature-less Annotations
+**Event Name:** `feature_creating_from_feature_less_annotations`
+**Description:** Tracks when users create features from annotations that don't have associated features.
 
-```
-bid-sniper-ai/
-├── app/
-│   └── page.tsx
-├── components/
-│   ├── bid-parameter-form.tsx
-│   ├── bid-results-table.tsx
-│   ├── ranking-sliders.tsx
-│   └── ui/
-├── lib/
-│   ├── api.ts
-│   └── store.ts
-├── types/
-│   └── index.ts
-└── public/
-```
+#### 8.2 Feature Creation with Measurements
 
-## Contributing
+**Event Name:** `feature_creating_with_measurements_from_feature_less_annotations`
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+**Description:** Tracks when users create features with measurements from feature-less annotations.
 
-## License
+### 9. Search
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+**Event Name:** `search_feature`
+**Description:** Tracks when users search for features in the feature panel.
 
-## Support
+### 10. Comments (Griffin Only)
 
-For support, email [support@bidsniper.ai](mailto:support@bidsniper.ai) or open an issue in the repository. 
+#### 10.1 Comment Resolved
+**Event Name:** `comment_resolved` (Note: Display name is "Comment resolved")
+**Description:** Tracks when users resolve comments.
+
+#### 10.2 Comment Created
+**Event Name:** `comment_created`
+**Description:** Tracks when users create new comments.
+
+#### 10.3 Comment Edited
+
+**Event Name:** `comment_edited`
+**Description:** Tracks when users edit existing comments.
+
+## How to View Events in PostHog
+
+1. **Access PostHog Dashboard**
+   - Login to your PostHog account
+   - Navigate to the Events section
+
+2. **Filter by Event Name**
+   - Use the event names listed above to filter specific events
+   - Example: Search for `keyboard_shortcut_used` to see all keyboard shortcut usage
+
+3. **Analyze Event Properties**
+   - Click on any event to see all captured properties
+   - Use properties to create custom insights and dashboards
+
+4. **Create Insights**
+   - Most used keyboard shortcuts: Group by `shortcut_command`
+   - Feature deletion patterns: Group by `feature_id` or `worksheet_id`
+   - Tool usage frequency: Group by `tool_id` in `tool_clicked` events
+   - Filter/sort preferences: Analyze `filtering_type` and `sorting_type` distributions
+
+
+
